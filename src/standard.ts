@@ -1,4 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
+import { SchemaError } from "@standard-schema/utils";
 import type { LooseProblemDetails } from "./types.ts";
 
 function makeKeyIsType(issues: StandardSchemaV1.Issue[]) {
@@ -42,13 +43,6 @@ export const problemDetailsSchema: StandardSchemaV1<LooseProblemDetails> = {
   },
 };
 
-export async function safeParse<TSchema extends StandardSchemaV1<unknown>>(
-  schema: TSchema,
-  value: unknown,
-): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>> {
-  return await schema["~standard"].validate(value);
-}
-
 export function safeParseSync<TSchema extends StandardSchemaV1<unknown>>(
   schema: TSchema,
   value: unknown,
@@ -58,9 +52,11 @@ export function safeParseSync<TSchema extends StandardSchemaV1<unknown>>(
   return result;
 }
 
-export function is<TSchema extends StandardSchemaV1<unknown>>(
+export function parseSync<TSchema extends StandardSchemaV1<unknown>>(
   schema: TSchema,
   value: unknown,
-): value is StandardSchemaV1.InferInput<TSchema> {
-  return !safeParseSync(schema, value).issues;
+): StandardSchemaV1.InferOutput<TSchema> {
+  const result = safeParseSync(schema, value);
+  if (result.issues) throw new SchemaError(result.issues);
+  return result.value;
 }

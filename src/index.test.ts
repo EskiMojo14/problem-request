@@ -1,5 +1,6 @@
 import { expect, it, describe } from "vite-plus/test";
-import { ProblemResponse, type LooseProblemDetails } from "./index.ts";
+import { ProblemResponse, type LooseProblemDetails, defineProblems } from "./index.ts";
+import * as v from "valibot";
 
 describe("ProblemResponse", () => {
   const problemDetails: LooseProblemDetails = {
@@ -34,5 +35,79 @@ describe("ProblemResponse", () => {
     });
     expect(response.headers.get("X-Custom-Header")).toBe("CustomValue");
     expect(response.headers.get("Content-Type")).toBe("application/json");
+  });
+});
+
+describe("defineProblems", () => {
+  const problems = defineProblems({
+    OutOfCredit: {
+      schema: v.object({
+        type: v.literal("https://example.com/probs/out-of-credit"),
+        title: v.literal("You do not have enough credit."),
+        detail: v.string(),
+        instance: v.string(),
+        accounts: v.array(v.string()),
+      }),
+      construct(detail: string, instance: string, accounts: string[]) {
+        return {
+          type: "https://example.com/probs/out-of-credit",
+          title: "You do not have enough credit.",
+          status: 403,
+          detail,
+          instance,
+          accounts,
+        } as const;
+      },
+    },
+    CustomInitProblem: {
+      schema: v.object({
+        type: v.literal("https://example.com/probs/custom-init"),
+        title: v.literal("Custom Init Problem"),
+      }),
+      construct() {
+        return [
+          {
+            type: "https://example.com/probs/custom-init",
+            title: "Custom Init Problem",
+          } as const,
+          {
+            headers: {
+              "X-Custom-Header": "CustomValue",
+            },
+          },
+        ];
+      },
+    },
+  });
+
+  it("should create a ProblemResponse using the defined problem", async () => {
+    const problem = problems.OutOfCredit(
+      "Your current balance is 30, but that costs 50.",
+      "/account/12345/msgs/abc",
+      ["/account/12345", "/account/67890"],
+    );
+    expect(problem).toBeInstanceOf(Response);
+    expect(problem).toBeInstanceOf(ProblemResponse);
+    expect(problem.status).toBe(403);
+    await expect(problem.json()).resolves.toEqual({
+      type: "https://example.com/probs/out-of-credit",
+      title: "You do not have enough credit.",
+      detail: "Your current balance is 30, but that costs 50.",
+      instance: "/account/12345/msgs/abc",
+      accounts: ["/account/12345", "/account/67890"],
+    });
+  });
+  it("should create a ProblemResponse with custom init using the defined problem", async () => {
+    const problem = problems.CustomInitProblem();
+    expect(problem).toBeInstanceOf(Response);
+    expect(problem).toBeInstanceOf(ProblemResponse);
+    expect(problem.status).toBe(500);
+    expect(problem.headers.get("X-Custom-Header")).toBe("CustomValue");
+    await expect(problem.json()).resolves.toEqual({
+      type: "https://example.com/probs/custom-init",
+      title: "Custom Init Problem",
+      detail: "This is a custom init problem.",
+      instance: "/account/12345/msgs/abc",
+    });
   });
 });

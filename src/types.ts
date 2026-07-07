@@ -1,3 +1,6 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
+import type { ProblemResponse } from "./index.ts";
+
 /** RFC 9457: Problem Details for HTTP APIs */
 export interface ProblemDetails {
   /** A URI reference that identifies the problem type. */
@@ -16,3 +19,34 @@ export interface ProblemDetails {
 export interface LooseProblemDetails extends ProblemDetails {
   [key: string]: unknown;
 }
+
+// status is determined by the problem, so it should not be included in the init object
+type StatuslessResponseInit = Omit<ResponseInit, "status"> & { status?: undefined };
+
+export interface ProblemDefinition {
+  schema: StandardSchemaV1<ProblemDetails, LooseProblemDetails>;
+  construct: (
+    ...args: any[]
+  ) => LooseProblemDetails | [problem: LooseProblemDetails, init?: StatuslessResponseInit];
+}
+
+export type ProblemDefinitions = Record<string, ProblemDefinition>;
+export type ValidateProblemDefinitions<T extends ProblemDefinitions> = T & {
+  [K in keyof T]: {
+    construct: (
+      ...args: Parameters<T[K]["construct"]>
+    ) =>
+      | StandardSchemaV1.InferInput<T[K]["schema"]>
+      | [problem: StandardSchemaV1.InferInput<T[K]["schema"]>, init?: StatuslessResponseInit];
+  };
+};
+
+export interface ProblemFactory<T extends ProblemDefinition> {
+  (...args: Parameters<T["construct"]>): ProblemResponse;
+  parse: (value: unknown) => StandardSchemaV1.InferOutput<T["schema"]>;
+  safeParse: (value: unknown) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<T["schema"]>>;
+}
+
+export type ProblemFactories<T extends ProblemDefinitions> = {
+  [K in keyof T]: ProblemFactory<T[K]>;
+};
