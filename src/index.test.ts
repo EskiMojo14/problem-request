@@ -1,5 +1,5 @@
 import { expect, it, describe } from "vite-plus/test";
-import { ProblemResponse, type LooseProblemDetails } from "../src/index.ts";
+import { ProblemResponse, type LooseProblemDetails } from "./index.ts";
 
 describe("ProblemResponse", () => {
   const problemDetails: LooseProblemDetails = {
