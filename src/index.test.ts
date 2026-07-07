@@ -24,4 +24,15 @@ describe("ProblemResponse", () => {
     });
     expect(response.status).toBe(403);
   });
+  it("respects custom headers and does not override Content-Type if provided", () => {
+    const customHeaders = new Headers({
+      "X-Custom-Header": "CustomValue",
+      "Content-Type": "application/json",
+    });
+    const response = ProblemResponse.problem(problemDetails, {
+      headers: customHeaders,
+    });
+    expect(response.headers.get("X-Custom-Header")).toBe("CustomValue");
+    expect(response.headers.get("Content-Type")).toBe("application/json");
+  });
 });

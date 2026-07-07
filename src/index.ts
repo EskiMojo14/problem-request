@@ -7,7 +7,9 @@ export class ProblemResponse extends Response {
   ): ProblemResponse {
     const { status = 500 } = problem;
     const headers = new Headers(init?.headers);
-    headers.set("Content-Type", "application/problem+json");
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/problem+json");
+    }
     return Object.setPrototypeOf(
       Response.json(problem, {
         ...init,
