@@ -66,6 +66,7 @@ export function defineProblem<
         return { value: parseResult.value };
       },
       type,
+      schema,
     },
   );
 }

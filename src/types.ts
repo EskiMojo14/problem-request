@@ -58,4 +58,5 @@ export interface ProblemFactory<
     value: LooseAutocomplete.Unknown<StandardSchemaV1.InferInput<TSchema>>,
   ) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
   type: TType;
+  schema: TSchema;
 }
