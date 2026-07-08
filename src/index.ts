@@ -28,10 +28,15 @@ export class ProblemResponse extends Response {
 }
 
 // #__NO_SIDE_EFFECTS__
-export function defineProblem<TSchema extends ProblemSchema, TArgs extends any[]>(
+export function defineProblem<
+  const TType extends string,
+  TSchema extends ProblemSchema<TType>,
+  TArgs extends any[],
+>(
+  type: TType,
   schema: TSchema,
-  construct: (...args: TArgs) => ProblemConstructResult<TSchema>,
-): ProblemFactory<TSchema, TArgs> {
+  construct: (...args: TArgs) => ProblemConstructResult<TType, TSchema>,
+): ProblemFactory<TType, TSchema, TArgs> {
   function parse(value: unknown) {
     // always make sure the problem details follow RFC 9457, before allowing custom problem definitions to be used
     standardSchema.parseSync(standardSchema.problemDetailsSchema, value);
@@ -41,8 +46,9 @@ export function defineProblem<TSchema extends ProblemSchema, TArgs extends any[]
     function constructProblem(...args: TArgs) {
       const constructed = construct(...args);
       const [problem, init] = Array.isArray(constructed) ? constructed : [constructed, undefined];
-      parse(problem); // validate the problem details before creating a response
-      return ProblemResponse.problem(problem as LooseProblemDetails, init);
+      const withType = { ...problem, type };
+      parse(withType); // validate the problem details before creating a response (but don't use parsed value)
+      return ProblemResponse.problem(withType, init);
     },
     {
       parse,
@@ -59,6 +65,7 @@ export function defineProblem<TSchema extends ProblemSchema, TArgs extends any[]
         }
         return { value: parseResult.value };
       },
+      type,
     },
   );
 }

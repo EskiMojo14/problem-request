@@ -31,6 +31,9 @@ import * as v from "valibot";
 import { defineProblem } from "problem-response";
 
 export const OutOfCredit = defineProblem(
+  // problem type URI
+  "https://example.com/probs/out-of-credit",
+  // schema for full problem details
   v.object({
     type: v.literal("https://example.com/probs/out-of-credit"),
     title: v.literal("You do not have enough credit."),
@@ -39,9 +42,9 @@ export const OutOfCredit = defineProblem(
     instance: v.pipe(v.string(), v.toUpperCase()),
     accounts: v.array(v.string()),
   }),
+  // factory for constructing problem details from arguments
   (detail: string, instance: string, accounts: string[]) =>
     ({
-      type: "https://example.com/probs/out-of-credit",
       title: "You do not have enough credit.",
       status: 403,
       detail,
@@ -52,6 +55,7 @@ export const OutOfCredit = defineProblem(
 
 // can also customise ResponseInit, e.g. to add headers
 export const CustomInitProblem = defineProblem(
+  "https://example.com/probs/custom-init",
   v.object({
     type: v.literal("https://example.com/probs/custom-init"),
     title: v.literal("Custom init problem"),
@@ -61,7 +65,6 @@ export const CustomInitProblem = defineProblem(
   (detail: string) => [
     // problem
     {
-      type: "https://example.com/probs/custom-init",
       title: "Custom init problem",
       status: 400,
       detail,

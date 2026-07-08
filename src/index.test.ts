@@ -50,6 +50,7 @@ describe("ProblemResponse", () => {
 describe("defineProblem", () => {
   const problems = {
     OutOfCredit: defineProblem(
+      "https://example.com/probs/out-of-credit",
       v.object({
         type: v.literal("https://example.com/probs/out-of-credit"),
         title: v.literal("You do not have enough credit."),
@@ -60,7 +61,6 @@ describe("defineProblem", () => {
       }),
       (detail: string, instance: string, accounts: string[]) =>
         ({
-          type: "https://example.com/probs/out-of-credit",
           title: "You do not have enough credit.",
           status: 403,
           detail,
@@ -69,15 +69,13 @@ describe("defineProblem", () => {
         }) as const,
     ),
     CustomInitProblem: defineProblem(
+      "https://example.com/probs/custom-init",
       v.object({
         type: v.literal("https://example.com/probs/custom-init"),
         title: v.literal("Custom Init Problem"),
       }),
       () => [
-        {
-          type: "https://example.com/probs/custom-init",
-          title: "Custom Init Problem",
-        } as const,
+        { title: "Custom Init Problem" as const },
         {
           headers: {
             "X-Custom-Header": "CustomValue",
@@ -151,5 +149,12 @@ describe("defineProblem", () => {
       expect(result.issues).toBeDefined();
       expect(result.issues?.length).toBeGreaterThan(0);
     });
+  });
+  it("has the correct type property", () => {
+    expect(problems.OutOfCredit).toHaveProperty("type", "https://example.com/probs/out-of-credit");
+    expect(problems.CustomInitProblem).toHaveProperty(
+      "type",
+      "https://example.com/probs/custom-init",
+    );
   });
 });
