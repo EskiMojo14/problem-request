@@ -29,34 +29,21 @@ export interface LooseProblemDetails extends ProblemDetails {
 // status is determined by the problem, so it should not be included in the init object
 type StatuslessResponseInit = Omit<ResponseInit, "status"> & { status?: undefined };
 
-export interface ProblemDefinition {
-  schema: StandardSchemaV1<ProblemDetails, LooseProblemDetails>;
-  construct: (
-    ...args: any[]
-  ) => LooseProblemDetails | [problem: LooseProblemDetails, init?: StatuslessResponseInit];
-}
+export type ProblemSchema = StandardSchemaV1<ProblemDetails, LooseProblemDetails>;
 
-export type ProblemDefinitions = Record<string, ProblemDefinition>;
-export type ValidateProblemDefinitions<T extends ProblemDefinitions> = T & {
-  [K in keyof T]: {
-    construct: (
-      ...args: Parameters<T[K]["construct"]>
-    ) =>
-      | StandardSchemaV1.InferInput<T[K]["schema"]>
-      | [problem: StandardSchemaV1.InferInput<T[K]["schema"]>, init?: StatuslessResponseInit];
-  };
-};
+export type ProblemConstructResult<TSchema extends ProblemSchema> =
+  | StandardSchemaV1.InferInput<TSchema>
+  | [problem: StandardSchemaV1.InferInput<TSchema>, init?: StatuslessResponseInit];
 
-export interface ProblemFactory<T extends ProblemDefinition> {
-  (...args: Parameters<T["construct"]>): ProblemResponse;
+export interface ProblemFactory<
+  TSchema extends ProblemSchema = ProblemSchema,
+  TArgs extends any[] = any[],
+> {
+  (...args: TArgs): ProblemResponse;
   parse: (
-    value: LooseAutocomplete.Unknown<StandardSchemaV1.InferInput<T["schema"]>>,
-  ) => StandardSchemaV1.InferOutput<T["schema"]>;
+    value: LooseAutocomplete.Unknown<StandardSchemaV1.InferInput<TSchema>>,
+  ) => StandardSchemaV1.InferOutput<TSchema>;
   safeParse: (
-    value: LooseAutocomplete.Unknown<StandardSchemaV1.InferInput<T["schema"]>>,
-  ) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<T["schema"]>>;
+    value: LooseAutocomplete.Unknown<StandardSchemaV1.InferInput<TSchema>>,
+  ) => StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>;
 }
-
-export type ProblemFactories<T extends ProblemDefinitions> = {
-  [K in keyof T]: ProblemFactory<T[K]>;
-};

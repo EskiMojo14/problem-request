@@ -1,5 +1,5 @@
 import { expect, it, describe } from "vite-plus/test";
-import { ProblemResponse, type LooseProblemDetails, defineProblems } from "./index.ts";
+import { ProblemResponse, type LooseProblemDetails, defineProblem } from "./index.ts";
 import * as v from "valibot";
 import { SchemaError } from "@standard-schema/utils";
 
@@ -47,10 +47,10 @@ describe("ProblemResponse", () => {
   });
 });
 
-describe("defineProblems", () => {
-  const problems = defineProblems({
-    OutOfCredit: {
-      schema: v.object({
+describe("defineProblem", () => {
+  const problems = {
+    OutOfCredit: defineProblem(
+      v.object({
         type: v.literal("https://example.com/probs/out-of-credit"),
         title: v.literal("You do not have enough credit."),
         status: v.literal(403),
@@ -58,37 +58,34 @@ describe("defineProblems", () => {
         instance: v.pipe(v.string(), v.toUpperCase()),
         accounts: v.array(v.string()),
       }),
-      construct(detail: string, instance: string, accounts: string[]) {
-        return {
+      (detail: string, instance: string, accounts: string[]) =>
+        ({
           type: "https://example.com/probs/out-of-credit",
           title: "You do not have enough credit.",
           status: 403,
           detail,
           instance,
           accounts,
-        } as const;
-      },
-    },
-    CustomInitProblem: {
-      schema: v.object({
+        }) as const,
+    ),
+    CustomInitProblem: defineProblem(
+      v.object({
         type: v.literal("https://example.com/probs/custom-init"),
         title: v.literal("Custom Init Problem"),
       }),
-      construct() {
-        return [
-          {
-            type: "https://example.com/probs/custom-init",
-            title: "Custom Init Problem",
-          } as const,
-          {
-            headers: {
-              "X-Custom-Header": "CustomValue",
-            },
+      () => [
+        {
+          type: "https://example.com/probs/custom-init",
+          title: "Custom Init Problem",
+        } as const,
+        {
+          headers: {
+            "X-Custom-Header": "CustomValue",
           },
-        ];
-      },
-    },
-  });
+        },
+      ],
+    ),
+  };
 
   it("should create a ProblemResponse using the defined problem", async () => {
     const problem = problems.OutOfCredit(
