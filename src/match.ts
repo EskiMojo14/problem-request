@@ -77,12 +77,12 @@ export interface MatchOptions {
 }
 
 /**
- * Matches a Response against a set of problem Definitions, returning the result of the match.
+ * Matches a Response against a set of problem definitions, returning the result of the match.
  * If the response is a valid problem, it will be parsed and returned as a known or unknown problem.
  * If the response is not a valid problem, the reason for the failure will be returned.
  *
  * @param response The Response instance to parse
- * @param problems The problem Definitions to match against
+ * @param problems The problem definitions to match against
  * @param options The options for matching the problem
  * @returns The result of the match
  *
