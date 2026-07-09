@@ -126,9 +126,10 @@ describe("matchProblem", async () => {
     });
 
     it("should fail if response body is already used", async () => {
-      const response = new Response(JSON.stringify({}), {
+      const response = ProblemResponse.problem({
+        type: "https://example.com/probs/used-body",
+        title: "Used body",
         status: 400,
-        headers: { "Content-Type": "application/problem+json" },
       });
       await response.text(); // consume the body
       const matchResult = await matchProblem(response, problems);
