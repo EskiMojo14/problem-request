@@ -226,8 +226,8 @@ importers:
         specifier: 7.0.0-dev.20260707.2
         version: 7.0.0-dev.20260707.2
       mix-n-matchers:
-        specifier: ^2.2.0
-        version: 2.2.0(vitest@4.1.9)
+        specifier: ^2.2.1
+        version: 2.2.1(vitest@4.1.9)
     devDependencies:
       '@types/node':
         specifier: ^25.6.2
@@ -1196,8 +1196,8 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
-  mix-n-matchers@2.2.0:
-    resolution: {integrity: sha512-THur78UHsXn1miDZdkInJD6f85Oi+15Hz6N0GVxXMrMENmjlB3OIWKSqHYPtRG/ecxMkHVZMfpVUN1HU9lQ+SA==}
+  mix-n-matchers@2.2.1:
+    resolution: {integrity: sha512-wrH6tcuK81EI0M9TWDixdgeWlSFxQ0WYoRlo0O/JHxSWi7poT9/6GyL8ppKBTlafMK4j5bJlVVK+K9EftwqnWg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
       jest: '>=28.0.0'
@@ -2128,7 +2128,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  mix-n-matchers@2.2.0(vitest@4.1.9):
+  mix-n-matchers@2.2.1(vitest@4.1.9):
     dependencies:
       '@jest/expect-utils': 30.4.1
       jest-matcher-utils: 30.4.1
