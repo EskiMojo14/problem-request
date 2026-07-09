@@ -85,6 +85,28 @@ export class ProblemResponse extends Response {
 }
 
 /**
+ * Defines a problem to match against.
+ *
+ * @param type - The unique type identifier for the problem.
+ * @param schema - The schema that the problem details must conform to.
+ * @returns A problem definition that can be used to match against problem responses.
+ *
+ * @example
+ * const IAmATeapot = defineProblem(
+ *   "https://example.com/probs/i-am-a-teapot",
+ *   v.object({
+ *    title: v.literal("I'm a teapot"),
+ *    status: v.literal(418),
+ *    tea: v.optional(v.string()),
+ *   }),
+ * );
+ */
+export function defineProblem<const TType extends string, TSchema extends ProblemSchema<TType>>(
+  type: TType,
+  schema: TSchema,
+): ProblemDefinition<TType, TSchema>;
+
+/**
  * Defines a problem factory that creates problem responses based on the provided type, schema, and construction function.
  * The factory ensures that the constructed problem details conform to both the RFC 7807 standard and the provided schema.
  *
@@ -110,11 +132,6 @@ export class ProblemResponse extends Response {
  * console.log(response.headers.get("Content-Type")); // "application/problem+json"
  * console.log(await response.json()); // { type: "https://example.com/probs/i-am-a-teapot", title: "I'm a teapot", status: 418, tea: "Earl Grey" }
  */
-// #__NO_SIDE_EFFECTS__
-export function defineProblem<const TType extends string, TSchema extends ProblemSchema<TType>>(
-  type: TType,
-  schema: TSchema,
-): ProblemDefinition<TType, TSchema>;
 export function defineProblem<
   const TType extends string,
   TSchema extends ProblemSchema<TType>,
@@ -124,6 +141,8 @@ export function defineProblem<
   schema: TSchema,
   construct: (...args: TArgs) => ProblemConstructResult<TType, TSchema>,
 ): ProblemFactory<TType, TSchema, TArgs>;
+
+// #__NO_SIDE_EFFECTS__
 export function defineProblem<
   const TType extends string,
   TSchema extends ProblemSchema<TType>,
