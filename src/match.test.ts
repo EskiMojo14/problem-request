@@ -17,10 +17,7 @@ const problems = {
       accounts,
     }),
   ),
-  IAmATeapot: defineProblem(f.iAmATeapotType, f.iAmATeapotSchema, () => ({
-    title: "I'm a teapot",
-    status: 418,
-  })),
+  IAmATeapot: defineProblem(f.iAmATeapotType, f.iAmATeapotSchema),
 };
 
 describe("matchProblem", async () => {
@@ -42,15 +39,19 @@ describe("matchProblem", async () => {
   });
 
   it("should allow an array of known problems", async () => {
-    const response = problems.IAmATeapot();
+    const response = problems.OutOfCredit(
+      f.outOfCreditProblem.detail,
+      f.outOfCreditProblem.instance,
+      f.outOfCreditProblem.accounts,
+    );
     const matchResult = await matchProblem(response, [problems.OutOfCredit, problems.IAmATeapot]);
     expect(matchResult.matched).toBe(true);
     expect(matchResult.isProblem).toBe(true);
-    expect(matchResult.type).toBe(problems.IAmATeapot.type);
+    expect(matchResult.type).toBe(problems.OutOfCredit.type);
     expect(matchResult.problem).toEqual({
-      type: f.iAmATeapotType,
-      title: "I'm a teapot",
-      status: 418,
+      type: f.outOfCreditType,
+      ...f.outOfCreditProblem,
+      instance: f.outOfCreditProblem.instance.toUpperCase(), // check that the transform was applied
     });
   });
 

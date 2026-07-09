@@ -57,12 +57,18 @@ export type ProblemConstructResult<TType extends string, TSchema extends Problem
       init?: StatuslessResponseInit,
     ];
 
-export interface ProblemFactory<
+export interface ProblemDefinition<
   TType extends string = string,
-  TSchema extends ProblemSchema = ProblemSchema,
-  TArgs extends Array<any> = Array<any>,
+  TSchema extends ProblemSchema<TType> = ProblemSchema<TType>,
 > {
-  (...args: TArgs): ProblemResponse;
   type: TType;
   schema: TSchema;
+}
+
+export interface ProblemFactory<
+  TType extends string = string,
+  TSchema extends ProblemSchema<TType> = ProblemSchema<TType>,
+  TArgs extends Array<any> = Array<any>,
+> extends ProblemDefinition<TType, TSchema> {
+  (...args: TArgs): ProblemResponse;
 }

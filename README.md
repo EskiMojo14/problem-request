@@ -49,7 +49,7 @@ const response = Response.json(
 
 ## `defineProblem`
 
-A helper function for defining a problem type with a schema and factory function for constructing problem details.
+A helper function for defining a problem type with a schema and optional factory function for constructing problem details.
 
 **Note: Asynchronous schema validation is not supported. The schema must be synchronous.**
 
@@ -102,6 +102,17 @@ export const IAmATeapot = defineProblem(
       },
     }
   ],
+);
+
+// alternatively, you can omit the factory function and just use the definition to match against known problems, e.g. with `matchProblem()`.
+// if the factory function is omitted, the problem will not be callable.
+export const KnownProblem = defineProblem(
+  "https://example.com/probs/known-problem",
+  v.object({
+    title: v.literal("This is a known problem."),
+    status: v.literal(400),
+    detail: v.string(),
+  }),
 );
 
 // app.ts

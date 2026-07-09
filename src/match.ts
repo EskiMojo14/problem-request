@@ -1,23 +1,23 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import * as standardSchema from "./standard.ts";
-import type { OneOf, Override, ProblemFactory, LooseProblemDetails } from "./types.ts";
+import type { OneOf, Override, ProblemDefinition, LooseProblemDetails } from "./types.ts";
 
-export type ProblemFactories = Array<ProblemFactory> | Record<PropertyKey, ProblemFactory>;
-export type ParsedProblem<TFactories extends ProblemFactories> =
-  TFactories extends Array<infer TFactory extends ProblemFactory>
+export type ProblemDefinitions = Array<ProblemDefinition> | Record<PropertyKey, ProblemDefinition>;
+export type ParsedProblem<TDefinitions extends ProblemDefinitions> =
+  TDefinitions extends Array<infer TFactory extends ProblemDefinition>
     ? Override<StandardSchemaV1.InferOutput<TFactory["schema"]>, { type: TFactory["type"] }>
-    : TFactories extends Record<PropertyKey, infer TFactory extends ProblemFactory>
+    : TDefinitions extends Record<PropertyKey, infer TFactory extends ProblemDefinition>
       ? Override<StandardSchemaV1.InferOutput<TFactory["schema"]>, { type: TFactory["type"] }>
       : never;
 
 export namespace MatchResult {
   /** A problem that matches one of the provided problem types */
-  export type KnownProblem<TFactories extends ProblemFactories> = {
+  export type KnownProblem<TDefinitions extends ProblemDefinitions> = {
     matched: true;
     isProblem: true;
     type: string;
-    problem: ParsedProblem<TFactories>;
+    problem: ParsedProblem<TDefinitions>;
   };
   /** A valid problem, but not one of the provided problem types */
   export type UnknownProblem = {
@@ -42,8 +42,8 @@ export namespace MatchResult {
   };
 }
 
-export type MatchResult<TFactories extends ProblemFactories> = OneOf<
-  MatchResult.KnownProblem<TFactories> | MatchResult.UnknownProblem | MatchResult.NotAProblem
+export type MatchResult<TDefinitions extends ProblemDefinitions> = OneOf<
+  MatchResult.KnownProblem<TDefinitions> | MatchResult.UnknownProblem | MatchResult.NotAProblem
 >;
 
 export interface MatchOptions {
@@ -77,12 +77,12 @@ export interface MatchOptions {
 }
 
 /**
- * Matches a Response against a set of problem factories, returning the result of the match.
+ * Matches a Response against a set of problem Definitions, returning the result of the match.
  * If the response is a valid problem, it will be parsed and returned as a known or unknown problem.
  * If the response is not a valid problem, the reason for the failure will be returned.
  *
  * @param response The Response instance to parse
- * @param problems The problem factories to match against
+ * @param problems The problem Definitions to match against
  * @param options The options for matching the problem
  * @returns The result of the match
  *
@@ -107,11 +107,11 @@ export interface MatchOptions {
  *   }
  * }
  */
-export async function matchProblem<TFactories extends ProblemFactories>(
+export async function matchProblem<TDefinitions extends ProblemDefinitions>(
   response: Response,
-  problems: TFactories,
+  problems: TDefinitions,
   options: MatchOptions = {},
-): Promise<MatchResult<TFactories>> {
+): Promise<MatchResult<TDefinitions>> {
   const { requireContentType = true, requireErrorStatus = true, shouldClone = false } = options;
   const { status } = response;
   if (requireContentType) {
@@ -125,7 +125,9 @@ export async function matchProblem<TFactories extends ProblemFactories>(
   if (response.bodyUsed) {
     return { matched: false, reason: { bodyUsed: true } };
   }
-  const known: Array<ProblemFactory> = Array.isArray(problems) ? problems : Object.values(problems);
+  const known: Array<ProblemDefinition> = Array.isArray(problems)
+    ? problems
+    : Object.values(problems);
 
   if (shouldClone) response = response.clone();
   let body: unknown;
@@ -137,8 +139,8 @@ export async function matchProblem<TFactories extends ProblemFactories>(
   const baseParseResult = await standardSchema.safeParse(standardSchema.problemDetailsSchema, body);
   if (!baseParseResult.issues) {
     const intermediate = baseParseResult.value;
-    for (const problemFactory of known) {
-      const { type, schema } = problemFactory;
+    for (const ProblemDefinition of known) {
+      const { type, schema } = ProblemDefinition;
       if (intermediate.type === type) {
         const parseResult = await standardSchema.safeParse(schema, intermediate);
         return !parseResult.issues

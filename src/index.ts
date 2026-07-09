@@ -3,6 +3,7 @@ import type {
   LooseProblemDetails,
   ProblemConstructResult,
   ProblemFactory,
+  ProblemDefinition,
   ProblemSchema,
 } from "./types.ts";
 
@@ -110,6 +111,10 @@ export class ProblemResponse extends Response {
  * console.log(await response.json()); // { type: "https://example.com/probs/i-am-a-teapot", title: "I'm a teapot", status: 418, tea: "Earl Grey" }
  */
 // #__NO_SIDE_EFFECTS__
+export function defineProblem<const TType extends string, TSchema extends ProblemSchema<TType>>(
+  type: TType,
+  schema: TSchema,
+): ProblemDefinition<TType, TSchema>;
 export function defineProblem<
   const TType extends string,
   TSchema extends ProblemSchema<TType>,
@@ -118,20 +123,28 @@ export function defineProblem<
   type: TType,
   schema: TSchema,
   construct: (...args: TArgs) => ProblemConstructResult<TType, TSchema>,
-): ProblemFactory<TType, TSchema, TArgs> {
-  return Object.assign(
-    function constructProblem(...args: TArgs) {
-      const constructed = construct(...args);
-      const [problem, init] = Array.isArray(constructed) ? constructed : [constructed, undefined];
-      const withType = { ...problem, type };
-      // check against RFC first
-      standardSchema.parseSync(standardSchema.problemDetailsSchema, withType);
-      // then check against the provided schema
-      standardSchema.parseSync(schema, withType);
-      return ProblemResponse.problem(withType, init);
-    },
-    { type, schema },
-  );
+): ProblemFactory<TType, TSchema, TArgs>;
+export function defineProblem<
+  const TType extends string,
+  TSchema extends ProblemSchema<TType>,
+  TArgs extends Array<any>,
+>(
+  type: TType,
+  schema: TSchema,
+  construct?: (...args: TArgs) => ProblemConstructResult<TType, TSchema>,
+): ProblemFactory<TType, TSchema, TArgs> | ProblemDefinition<TType, TSchema> {
+  const definition: ProblemDefinition<TType, TSchema> = { type, schema };
+  if (!construct) return definition;
+  return Object.assign(function constructProblem(...args: TArgs) {
+    const constructed = construct(...args);
+    const [problem, init] = Array.isArray(constructed) ? constructed : [constructed, undefined];
+    const withType = { ...problem, type };
+    // check against RFC first
+    standardSchema.parseSync(standardSchema.problemDetailsSchema, withType);
+    // then check against the provided schema
+    standardSchema.parseSync(schema, withType);
+    return ProblemResponse.problem(withType, init);
+  }, definition);
 }
 
 export type { ProblemDetails, LooseProblemDetails, ProblemFactory } from "./types.ts";
