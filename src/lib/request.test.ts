@@ -39,9 +39,7 @@ describe("FetchableRequest", () => {
     expect(request).toBeInstanceOf(Request);
     expect(request).toBeInstanceOf(FetchableRequest);
     expect(request).toHaveMethod("POST");
-    // coming soon
-    // await expect(request).toHaveFormDataBody(formData);
-    await expect(request.formData()).resolves.toBeInstanceOf(FormData);
+    await expect(request).toHaveFormDataBody(formData);
   });
 
   it("should fetch the request and return a Response", async () => {
@@ -106,9 +104,7 @@ describe("FetchableRequest", () => {
           expect(request).toBeInstanceOf(Request);
           expect(request).toBeInstanceOf(FetchableRequest);
           expect(request).toHaveMethod(method.toUpperCase());
-          // coming soon
-          // await expect(request).toHaveFormDataBody(formData);
-          await expect(request.formData()).resolves.toBeInstanceOf(FormData);
+          await expect(request).toHaveFormDataBody(formData);
         });
       },
     );

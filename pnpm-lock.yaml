@@ -226,8 +226,8 @@ importers:
         specifier: 7.0.0-dev.20260707.2
         version: 7.0.0-dev.20260707.2
       mix-n-matchers:
-        specifier: ^2.2.2
-        version: 2.2.2(vitest@4.1.10)
+        specifier: ^2.3.0
+        version: 2.3.0(vitest@4.1.10)
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.18.4
@@ -1490,8 +1490,8 @@ packages:
     engines: {node: '>= 16'}
     hasBin: true
 
-  mix-n-matchers@2.2.2:
-    resolution: {integrity: sha512-LoeQeG/Lvv/H5FxcD2HBIEwi1Lp6bPh/ESqknZ9QkgoNJOeHx/jO1DEU58NBEBAJIdIWsufv8ummqIMHUh4g2g==}
+  mix-n-matchers@2.3.0:
+    resolution: {integrity: sha512-Ul8ZP6j+uHOVNt6U1f4BktVfzxwPjDrzus/l+O+yPxy7fefVh75mo3OrMYPQTz1kfvgVu7F34JMsIWqTpIIdpw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
       jest: '>=28.0.0'
@@ -2745,7 +2745,7 @@ snapshots:
 
   marked@9.1.6: {}
 
-  mix-n-matchers@2.2.2(vitest@4.1.10):
+  mix-n-matchers@2.3.0(vitest@4.1.10):
     dependencies:
       '@jest/expect-utils': 30.4.1
       jest-matcher-utils: 30.4.1

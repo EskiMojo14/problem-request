@@ -5,7 +5,7 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@0.2.4
   vite-plus: 0.2.4
 minimumReleaseAgeExclude:
-  - mix-n-matchers@2.2.2
+  - mix-n-matchers@2.3.0
 overrides:
   vite: "catalog:"
 peerDependencyRules:
