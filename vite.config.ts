@@ -66,6 +66,16 @@ export default defineConfig({
           },
         },
       },
+      {
+        extends: true,
+        test: {
+          name: "typecheck",
+          typecheck: {
+            enabled: true,
+            only: true,
+          },
+        },
+      },
     ],
   },
 });

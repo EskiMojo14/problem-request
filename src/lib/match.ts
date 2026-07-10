@@ -5,10 +5,14 @@ import type { OneOf, Override, ProblemDefinition, LooseProblemDetails } from "./
 
 export type ProblemDefinitions = Array<ProblemDefinition> | Record<PropertyKey, ProblemDefinition>;
 export type ParsedProblem<TDefinitions extends ProblemDefinitions> =
-  TDefinitions extends Array<infer TFactory extends ProblemDefinition>
-    ? Override<StandardSchemaV1.InferOutput<TFactory["schema"]>, { type: TFactory["type"] }>
-    : TDefinitions extends Record<PropertyKey, infer TFactory extends ProblemDefinition>
+  TDefinitions extends Array<infer TFactory>
+    ? TFactory extends ProblemDefinition
       ? Override<StandardSchemaV1.InferOutput<TFactory["schema"]>, { type: TFactory["type"] }>
+      : never
+    : TDefinitions extends Record<PropertyKey, infer TFactory>
+      ? TFactory extends ProblemDefinition
+        ? Override<StandardSchemaV1.InferOutput<TFactory["schema"]>, { type: TFactory["type"] }>
+        : never
       : never;
 
 export namespace MatchResult {
