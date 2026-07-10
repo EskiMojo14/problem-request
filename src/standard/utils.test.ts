@@ -1,30 +1,9 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { expect, describe, it } from "vite-plus/test";
 
-import {
-  problemDetailsSchema,
-  safeParse,
-  safeParseSync,
-  parse,
-  parseSync,
-  is,
-  assert,
-} from "./standard.ts";
-
-const validProblemDetails = {
-  type: "https://example.com/probs/out-of-credit",
-  title: "You do not have enough credit.",
-  detail: "Your current balance is 30, but that costs 50.",
-  instance: "/account/12345/msgs/abc",
-  status: 403,
-};
-const invalidProblemDetails = {
-  type: 123, // should be string
-  title: "You do not have enough credit.",
-  detail: "Your current balance is 30, but that costs 50.",
-  instance: "/account/12345/msgs/abc",
-  status: "403", // should be number
-};
+import { invalidProblemDetails, validProblemDetails } from "../../tests/fixtures.ts";
+import { problemDetailsSchema } from "./schema.ts";
+import { safeParse, safeParseSync, parse, parseSync, is, assert } from "./utils.ts";
 
 const asyncSchema: StandardSchemaV1 = {
   "~standard": {
@@ -33,31 +12,6 @@ const asyncSchema: StandardSchemaV1 = {
     validate: async (value) => ({ value }),
   },
 };
-
-describe("problemDetailsSchema", () => {
-  it("should validate a valid problem details object", () => {
-    const result = problemDetailsSchema["~standard"].validate(validProblemDetails);
-    expect(result).toEqual({ value: validProblemDetails });
-  });
-
-  it("should return issues for an invalid problem details object", () => {
-    const result = problemDetailsSchema["~standard"].validate(invalidProblemDetails);
-    expect(result).toHaveProperty(
-      "issues",
-      expect.arrayContaining([
-        {
-          message: 'Expected string for key "type", but got number.',
-          path: ["type"],
-        },
-        {
-          message: 'Expected number for key "status", but got string.',
-          path: ["status"],
-        },
-      ]),
-    );
-  });
-});
-
 describe("safeParse", () => {
   it("should parse a valid problem details object", async () => {
     await expect(safeParse(problemDetailsSchema, validProblemDetails)).resolves.toEqual({

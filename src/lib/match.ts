@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-import * as standardSchema from "./standard.ts";
+import * as standardSchema from "../standard.ts";
 import type { OneOf, Override, ProblemDefinition, LooseProblemDetails } from "./types.ts";
 
 export type ProblemDefinitions = Array<ProblemDefinition> | Record<PropertyKey, ProblemDefinition>;

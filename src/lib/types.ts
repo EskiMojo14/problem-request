@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-import type { ProblemResponse } from "./index.ts";
+import type { ProblemResponse } from "../index.ts";
 
 // oxlint-disable-next-line typescript/no-redundant-type-constituents
 export type Compute<T> = { [K in keyof T]: T[K] } & unknown;
