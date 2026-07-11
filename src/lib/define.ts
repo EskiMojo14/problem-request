@@ -5,7 +5,7 @@ import type {
   ProblemFactory,
   ProblemDefinition,
   ProblemSchema,
-} from "./types.ts";
+} from "./types/index.ts";
 
 /**
  * Defines a problem to match against.

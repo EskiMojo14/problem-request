@@ -4,7 +4,8 @@ import { describe, it, expectTypeOf } from "vite-plus/test";
 import * as f from "../../tests/fixtures.ts";
 import { defineProblem } from "./define.ts";
 import { matchProblem } from "./match.ts";
-import type { Compute, LooseProblemDetails } from "./types.ts";
+import type { LooseProblemDetails } from "./types/index.ts";
+import type { Compute } from "./types/utils.ts";
 
 const problems = {
   OutOfCredit: defineProblem(f.outOfCreditType, f.outOfCreditSchema),

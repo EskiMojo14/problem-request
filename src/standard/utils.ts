@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { SchemaError } from "@standard-schema/utils";
 
-import type { LooseAutocomplete } from "../lib/types.ts";
+import type { LooseAutocomplete } from "../lib/types/utils.ts";
 
 /**
  * Parse an unknown value against a schema synchronously.

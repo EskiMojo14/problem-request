@@ -1,4 +1,4 @@
-import type { LooseProblemDetails } from "./types.ts";
+import type { LooseProblemDetails } from "./types/index.ts";
 
 /**
  * A Response subclass that represents a problem details response as defined in RFC 7807.

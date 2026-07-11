@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
 
-import type { LooseProblemDetails } from "../lib/types.ts";
+import type { LooseProblemDetails } from "../lib/types/index.ts";
 
 // #__NO_SIDE_EFFECTS__
 function makeKeyIsType(issues: Array<StandardSchemaV1.Issue>) {

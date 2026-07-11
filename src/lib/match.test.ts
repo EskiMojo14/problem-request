@@ -3,7 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import * as f from "../../tests/fixtures.ts";
 import { defineProblem, ProblemResponse } from "../index.ts";
 import { matchProblem } from "./match.ts";
-import type { LooseProblemDetails } from "./types.ts";
+import type { LooseProblemDetails } from "./types/index.ts";
 
 const problems = {
   OutOfCredit: defineProblem(
