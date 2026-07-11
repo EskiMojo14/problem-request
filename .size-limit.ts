@@ -1,10 +1,9 @@
 import type { Check, SizeLimitConfig } from "size-limit";
 
-import * as fpd from "./src";
-import * as fpdStandard from "./src/standard";
-
 const path = "dist/index.mjs";
 const standardPath = "dist/standard.mjs";
+
+const [fpd, fpdStandard] = await Promise.all([import(`./${path}`), import(`./${standardPath}`)]);
 
 const checks: Array<Check> = [
   {
